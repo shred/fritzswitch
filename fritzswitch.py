@@ -109,7 +109,7 @@ class FritzHomeAuto:
             result['state'] = self.fetch_bool('getswitchstate', ain)
             
             power = self.fetch_int('getswitchpower', ain)
-            if power:
+            if power != None:
                 result['power'] = ('%.2f W' % (power / 1000))
                 
             result['energy'] = ('%d Wh' % (self.fetch_int('getswitchenergy', ain)))
