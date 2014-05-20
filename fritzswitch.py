@@ -87,9 +87,10 @@ class FritzHomeAuto:
         ains = {}
         with self.execute('getswitchlist') as f:
             for line in f.readlines():
-                ain = line.decode().strip()
-                name = self.get_switch_name(ain)
-                ains[ain] = name
+                for entry in line.decode().split(','):
+                    ain = entry.strip()
+                    name = self.get_switch_name(ain)
+                    ains[ain] = name
         return ains
             
     def get_switch_name(self, ain):
