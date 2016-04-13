@@ -23,6 +23,9 @@ import hashlib
 from urllib.request import urlopen
 from xml.etree.ElementTree import parse
 
+# Documentation of Fritz AHA see:
+# http://avm.de/fileadmin/user_upload/Global/Service/Schnittstellen/AHA-HTTP-Interface.pdf
+
 class FritzHomeAuto:
     def __init__(self, user, password, url):
         """Create a connection to the Fritz!Box with the given user and password."""
@@ -93,6 +96,13 @@ class FritzHomeAuto:
                     ains[ain] = name
         return ains
             
+    def get_switch_infos(self):
+        result = bytes()
+        with self.execute('getdevicelistinfos') as f:
+            for line in f.readlines():
+                result += line
+        return result.decode('utf-8')
+ 
     def get_switch_name(self, ain):
         """Get the name of a switch."""
         return self.fetch_string('getswitchname', ain)
@@ -129,6 +139,7 @@ if __name__ == "__main__":
     parser.add_argument('-1', '--on', dest='switch', action='store_const', const='on', help='Turn AIN on')
     parser.add_argument('-t', '--toggle', dest='switch', action='store_const', const='toggle', help='Toggle AIN')
     parser.add_argument('-s', '--state', action='store_true', help='Get state of AIN')
+    parser.add_argument('-X', '--xml', action='store_true', help='Output the state of all devices as XML')
     args = parser.parse_args()
     
     host = args.host
@@ -147,9 +158,14 @@ if __name__ == "__main__":
             print('%s is now off' % (args.ain))
             
     elif args.ain and args.state:
+        fha.get_switch_infos()
         state = fha.get_state(args.ain)
         for key in sorted(state):
             print('%-10s : %s' % (key, state[key]))
+ 
+    elif args.xml:
+        xml = fha.get_switch_infos()
+        print(xml)
     
     elif args.list:
         switches = fha.get_switch_list()
