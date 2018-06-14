@@ -143,7 +143,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     host = args.host
-    if not (host.startswith('http://') and host.startswith('https://')):
+    if not (host.startswith('http://') or host.startswith('https://')):
         host = 'http://' + host
     if host.endswith('/'):
         host = host[0:-1]
