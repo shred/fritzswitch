@@ -20,6 +20,8 @@
 
 import argparse
 import hashlib
+import os
+import ssl
 from urllib.request import urlopen
 from xml.etree.ElementTree import parse
 
@@ -147,6 +149,9 @@ if __name__ == "__main__":
         host = 'http://' + host
     if host.endswith('/'):
         host = host[0:-1]
+    
+    if getattr(ssl, '_create_unverified_context', None):
+        ssl._create_default_https_context = ssl._create_unverified_context
     
     fha = FritzHomeAuto(args.user, args.password, host)
     
