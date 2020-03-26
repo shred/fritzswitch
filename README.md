@@ -16,6 +16,7 @@ fritzswitch accepts these parameters:
 * `-t`, `--toggle`: Toggle AIN
 * `-s`, `--state`: Show current AIN state
 * `-X`, `--xml`: Output current AIN state as XML
+* `-tt`, `--temperature`: Outputs the current AIN temperature. If no AIN is provided, returns a list of all AINs providing a temperature reading.
 
 ## License
 
