@@ -126,8 +126,20 @@ class FritzHomeAuto:
                 result['power'] = ('%.2f W' % (power / 1000))
                 
             result['energy'] = ('%d Wh' % (self.fetch_int('getswitchenergy', ain)))
+            result['temperature'] = self.get_temperature(ain)
         return result
 
+    def get_temperature(self, ain):
+        if self.fetch_bool('getswitchpresent', ain):
+            return self.fetch_int('gettemperature', ain) / 10
+        return ""
+
+    def get_temperatures(self):
+        result = {}
+        ains = self.get_switch_list()
+        for current_ain in ains:
+            result[current_ain] = self.get_temperature(current_ain)
+        return result
 
 
 if __name__ == "__main__":
@@ -142,6 +154,7 @@ if __name__ == "__main__":
     parser.add_argument('-t', '--toggle', dest='switch', action='store_const', const='toggle', help='Toggle AIN')
     parser.add_argument('-s', '--state', action='store_true', help='Get state of AIN')
     parser.add_argument('-X', '--xml', action='store_true', help='Output the state of all devices as XML')
+    parser.add_argument('-tt', '--temperature', action='store_true', help='Get the temperature of the AIN. If no AIN is provided, a list of all devices gets printed')
     args = parser.parse_args()
     
     host = args.host
@@ -177,3 +190,12 @@ if __name__ == "__main__":
         for ain in switches:
             print('%s : %s' % (ain, switches[ain]))
 
+    elif args.temperature and args.ain:
+        temperature = fha.get_temperature(args.ain)
+        print ('%f' % temperature)
+
+    elif args.temperature:
+        dictionary = fha.get_temperatures()
+        for key in dictionary:
+            if dictionary[key] != "":
+                print("%s : %s" % (key, dictionary[key]))
